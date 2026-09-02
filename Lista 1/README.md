@@ -50,9 +50,9 @@ Inclua aqui imagens do programa em execução ou link para um vídeo.
 
 ## Respostas:
 * a) Descreva uma possível configuração dos buffers (VBO, VAO) para representá-lo. 
-** Para esse exercício foi adicionado no VBO as cores de cada um dos vértices intercalada com sua posição. Quanto ao VAO destacamos como atributo 0 a leitura das posições e no atributo 1 a leitura das cores.
+* Para esse exercício foi adicionado no VBO as cores de cada um dos vértices intercalada com sua posição. Quanto ao VAO destacamos como atributo 0 a leitura das posições e no atributo 1 a leitura das cores.
 * b) Como estes atributos seriam identificados no vertex shader?
-** No vertex shader os atributos vindos do VAO são declarados na entrada com o "in" e mapeados como position e como color para que ao rodar, o triângulo faça display certo.
+* No vertex shader os atributos vindos do VAO são declarados na entrada com o "in" e mapeados como position e como color para que ao rodar, o triângulo faça display certo.
   
 ---
 

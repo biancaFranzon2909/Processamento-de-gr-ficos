@@ -46,7 +46,7 @@ Inclua aqui imagens do programa em execução ou link para um vídeo.
 <img width="792" height="583" alt="image" src="https://github.com/user-attachments/assets/8bbc8fe6-7711-4917-b790-c89c60fa8a35" />
 <img width="785" height="581" alt="image" src="https://github.com/user-attachments/assets/d20c87dc-308f-49ee-8be4-f8bf8d76b8d8" />
 ---
-### Respostas:
+## Respostas:
 - a) Descreva uma possível configuração dos buffers (VBO, VAO) para representá-lo. 
 - Para esse exercício foi adicionado no VBO as cores de cada um dos vértices intercalada com sua posição. Quanto ao VAO destacamos como atributo 0 a leitura das posições e no atributo 1 a leitura das cores.
 - b) Como estes atributos seriam identificados no vertex shader?

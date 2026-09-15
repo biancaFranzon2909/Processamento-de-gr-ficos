@@ -187,6 +187,9 @@ int main()
     int metadeWidth = width / 2;
     int metadeHeight = height / 2;
 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
 		glfwGetFramebufferSize(window, &width, &height);
 		glViewport(0, 0, metadeWidth, metadeHeight);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -200,10 +203,6 @@ int main()
     glViewport(metadeWidth, metadeHeight, metadeWidth, metadeHeight);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
-
-		// Limpa o buffer de cor
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // cor de fundo
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		glLineWidth(10);
 		glPointSize(20);
@@ -299,9 +298,9 @@ int setupGeometry()
 	GLfloat vertices[] = {
 		// x   y     z
 		// T0
-		-0.5 * 400 + 400, -0.5 * 400 + 300, 0.0 ,     // v0
-		 0.5 * 400 + 400, -0.5 * 400 + 300, 0.0 ,	 // v1
-		 0.0 * 400 + 400,  0.5 * 400 + 300, 0.0 	 // v2
+		-0.5f * 400 + 400,  0.5f * 300 + 300, 0.0f, // v0
+    0.5f * 400 + 400,  0.5f * 300 + 300, 0.0f, // v1
+    0.0f * 400 + 400, -0.5f * 300 + 300, 0.0f  // v2
 		// T1
 
 	};

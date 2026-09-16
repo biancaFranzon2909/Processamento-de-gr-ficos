@@ -26,7 +26,6 @@
 #include <iostream>
 #include <string>
 #include <assert.h>
-#include <vector>
 
 using namespace std;
 
@@ -36,25 +35,8 @@ using namespace std;
 // GLFW
 #include <GLFW/glfw3.h>
 
-// GLM 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-using namespace glm;
-
-
-struct TriangleInfo
-{
-  vec3 pos;
-  vec3 dimensions;
-  vec3 color;
-};
-
-
 // Protótipo da função de callback de teclado
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // Protótipos das funções
 int setupShader();
@@ -67,11 +49,9 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 const GLchar *vertexShaderSource = R"glsl(
  #version 400
  layout (location = 0) in vec3 position;
- uniform mat4 projection;
- uniform mat4 model;
  void main()
  {
-	 gl_Position = projection * model * vec4(position.x, position.y, position.z, 1.0);
+	 gl_Position = vec4(position.x, position.y, position.z, 1.0);
  }
  )glsl";
 
@@ -85,18 +65,6 @@ const GLchar *fragmentShaderSource = R"glsl(
 	 color = inputColor;
  }
  )glsl";
-
-// Para exercício 6 da lista 2
-vector <TriangleInfo> tris;
-vector <vec3> colors;
-
-void initializeColors();
-
-void addTriangle(vec3 pos, vec3 dim, vec3 color);
-
-int color = 0;
-
-
 
 // Função MAIN
 int main()
@@ -133,9 +101,6 @@ int main()
 
 	// Fazendo o registro da função de callback para a janela GLFW
 	glfwSetKeyCallback(window, key_callback);
-  glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-
 
 	// GLAD: carrega todos os ponteiros d funções da OpenGL
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -150,11 +115,11 @@ int main()
 	cout << "Renderer: " << renderer << endl;
 	cout << "OpenGL version supported " << version << endl;
 
-	
-	//Exercicio 3 da Lista 2
-	//glViewport(400, 100, 400, 300);
+	// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	glViewport(0, 0, width, height);
 
-	
 	// Compilando e buildando o programa de shader
 	GLuint shaderID = setupShader();
 
@@ -170,21 +135,6 @@ int main()
 
 	double prev_s = glfwGetTime();	// Define o "tempo anterior" inicial.
 	double title_countdown_s = 0.1; // Intervalo para atualizar o título da janela com o FPS.
-
-	// Criação da matriz de projeção - projection matrix
-
-	// Ex 1 Lista 2
-	//mat4 projection = ortho(-10.0,10.0,-10.0,10.0,-1.0,1.0);
-	// Ex 2 Lista 2
-	mat4 projection = ortho(0.0,800.0,0.0,600.0,-1.0,1.0);
-	// Para mandar pro shader
-	GLint projLoc = glGetUniformLocation(shaderID,"projection");
-	glUniformMatrix4fv(projLoc,1,GL_FALSE,value_ptr(projection));
-
-	float angle = 0.0;
-
-  initializeColors();
-
 
 	// Loop da aplicação - "game loop"
 	while (!glfwWindowShouldClose(window))
@@ -213,11 +163,6 @@ int main()
 		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
 		glfwPollEvents();
 
-		// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-		glViewport(0, 0, width, height);
-
 		// Limpa o buffer de cor
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // cor de fundo
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -227,26 +172,11 @@ int main()
 
 		glBindVertexArray(VAO); // Conectando ao buffer de geometria
 
-    for (int i = 0; i < tris.size(); i++) {
-      glUniform4f(colorLoc, tris[i].color.r, tris[i].color.g, tris[i].color.b, 1.0f); // enviando cor para variável uniform inputColor
-      //Matriz de transformações do objeto (triângulo) - model matrix
-      mat4 model = mat4(1); // matriz identidade
-      angle = glfwGetTime();
-      model = translate(model, vec3(tris[i].pos.x, tris[i].pos.y, 0.0));
-      model = rotate(model, angle,vec3(0.0,0.0,1.0));
-      model = scale(model,vec3(tris[i].dimensions.x,tris[i].dimensions.y, 1.0));
-      GLint modelLoc = glGetUniformLocation(shaderID,"model");
-      glUniformMatrix4fv(modelLoc,1,GL_FALSE,value_ptr(model));
-
-      glDrawArrays(GL_TRIANGLES, 0, 3);
-    }
-
-		
-
+		glUniform4f(colorLoc, 0.0f, 0.0f, 1.0f, 1.0f); // enviando cor para variável uniform inputColor
 
 		// Chamada de desenho - drawcall
 		// Poligono Preenchido - GL_TRIANGLES
-		
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// glBindVertexArray(0); // Desnecessário aqui, pois não há múltiplos VAOs
 
@@ -335,9 +265,9 @@ int setupGeometry()
 	GLfloat vertices[] = {
 		// x   y     z
 		// T0
-		-0.5 , -0.5 , 0.0 ,  // v0
-		 0.5 , -0.5 , 0.0 ,	 // v1
-		 0.0 ,  0.5 , 0.0 	 // v2
+		-0.5, -0.5, 0.0,     // v0
+		 0.5, -0.5, 0.0,	 // v1
+		 0.0,  0.5, 0.0,	 // v2
 		// T1
 
 	};
@@ -373,32 +303,4 @@ int setupGeometry()
 	glBindVertexArray(0);
 
 	return VAO;
-}
-
-void initializeColors() {
-  colors.push_back(vec3(1.0, 0.0, 0.0));
-  colors.push_back(vec3(0.0, 1.0, 0.0));
-  colors.push_back(vec3(0.0, 0.0, 1.0));
-  colors.push_back(vec3(1.0, 0.0, 1.0));
-  colors.push_back(vec3(1.0, 1.0, 0.0));
-  colors.push_back(vec3(0.0, 1.0, 1.0));
-}
-
-void addTriangle(vec3 pos, vec3 dim, vec3 color) {
-  TriangleInfo tri;
-  tri.pos = pos;
-  tri.dimensions = dim;
-  tri.color = color;
-  tris.push_back(tri);
-}
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods){
-  if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    cout << xpos << " " << ypos << endl;
-    addTriangle(vec3(xpos, 600 - ypos, 0.0), vec3(100.0, 100.0, 1.0), colors[color]);
-    color = (color + 1) % colors.size();
-    
-  }
 }
